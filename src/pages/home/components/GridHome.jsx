@@ -1,62 +1,93 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo } from 'react';
 import GenericDataGrid from '../../../components/DataGrid';
-import AddWord from './AddWord';
-
-const mockRows = [
-  { id: 1, word: 'sleep', meaning: 'dormir', prayer: 'you have to sleep like Rhysand' },
-  { id: 2, word: 'eat', meaning: 'comer', prayer: 'you have to eat like Rhysand' },
-  { id: 3, word: 'poop', meaning: 'caca', prayer: 'you have to poop like rhysand' },
-  { id: 4, word: 'run', meaning: 'correr', prayer: 'you have to run like Rhysand' },
-  { id: 5, word: 'fly', meaning: 'volar', prayer: 'you have to fly like Rhysand' },
-  { id: 6, word: 'fight', meaning: 'pelear', prayer: 'you have to fight like Rhysand' },
-];
+import useFetchphrases from '../hooks/useFetchWords';
+import {
+  Modal,
+  Box,
+  Typography,
+  Button,
+} from '@mui/material';
 
 const GridHome = () => {
+  const [search, setSearch] = useState('');
+  const { words, loading } = useFetchphrases();
+  const [selectedWord, setSelectedWord] = useState(null);
   const [open, setOpen] = useState(false);
 
-  const [search, setSearch] = useState('');
+  const handleChange = (value) => setSearch(value);
 
-  const handleChange = (e) => {
-    setSearch(e);
+  const handleRowClick = (params) => {
+    setSelectedWord(params.row);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedWord(null);
   };
 
   const filteredRows = useMemo(() => {
-    return mockRows.filter(
+    return words?.filter(
       (row) =>
-        row.word.toLowerCase().includes(search.toLowerCase()) ||
-        row.prayer.toLowerCase().includes(search.toLowerCase()) ||
-        row.meaning.toLowerCase().includes(search.toLowerCase())
+        row.phrase?.toLowerCase().includes(search.toLowerCase()) ||
+        row.usage?.toLowerCase().includes(search.toLowerCase()) ||
+        row.description?.toLowerCase().includes(search.toLowerCase())
     );
-  }, [search]);
-
-
-  const handleClickAdd = useCallback((event) => {
-    setOpen(event.isTrusted)
-  }, []);
+  }, [search, words]);
 
   const columns = [
-    { field: 'word', headerName: 'Word' },
-    { field: 'meaning', headerName: 'Meaning' },
-    { field: 'prayer', headerName: 'Prayer' },
+    { field: 'phrase', headerName: 'Phrase' },
+    { field: 'usage', headerName: 'Usage', hideOnMobile: true },
+    { field: 'description', headerName: 'Description', hideOnMobile: true },
   ];
-  
 
   return (
-   <>
-   {open && <AddWord open={open} onClose={() => setOpen(false)} />}
-    <GenericDataGrid
-      rows={filteredRows}
-      columns={columns}
-      loading={false}
-      onChange={handleChange}
-      value={search}
-      buttonAdd={true}
-      onClickAddButton={handleClickAdd}
-      
-    />
-   
-   </>
-   
+    <>
+      <GenericDataGrid
+        rows={filteredRows}
+        columns={columns}
+        loading={loading}
+        onChange={handleChange}
+        value={search}
+        buttonAdd={false}
+        onRowClick={handleRowClick}
+      />
+
+      <Modal open={open} onClose={handleClose}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            bgcolor: 'background.paper',
+            borderRadius: '12px',
+            boxShadow: 24,
+            p: 4,
+            width: 390,
+          }}
+        >
+          {selectedWord && (
+            <>
+              <Typography variant="h4" gutterBottom>
+                {selectedWord.phrase}
+              </Typography>
+              <Typography variant="body2" gutterBottom>
+                <strong>Usage: </strong> {selectedWord.usage}
+              </Typography>
+              <Typography variant="body2" gutterBottom>
+                <strong>Description: </strong> {selectedWord.description}
+              </Typography>
+              <Box mt={2} textAlign="right">
+                <Button variant="contained" onClick={handleClose}>
+                  Cerrar
+                </Button>
+              </Box>
+            </>
+          )}
+        </Box>
+      </Modal>
+    </>
   );
 };
 

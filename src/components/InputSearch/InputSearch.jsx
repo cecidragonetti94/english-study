@@ -12,7 +12,6 @@ const InputSearch = ({ text, onChange }) => {
   };
   return (
 <TextField
-  label="Buscar"
   value={localValue}
   onChange={handleChange}
   type="text"

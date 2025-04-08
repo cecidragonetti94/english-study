@@ -6,9 +6,10 @@ import {
   CircularProgress,
   Button,
   IconButton,
-  Collapse
+  Collapse,
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import useFetchwords from '../hooks/useFetchWords';
 
 const style = {
   position: 'absolute',
@@ -22,27 +23,28 @@ const style = {
   p: 4,
 };
 
-const getRandomWords = (rows, count = 10) => {
-  const shuffled = [...rows].sort(() => 0.5 - Math.random());
+const getRandomItems = (list, count = 10) => {
+  const shuffled = [...list].sort(() => 0.5 - Math.random());
   return shuffled.slice(0, count);
 };
 
-const RandomWordsModal = ({ open, onClose, rows }) => {
+const RandomWordsModal = ({ open, onClose }) => {
+  const { words, loading: dataLoading } = useFetchwords();
   const [loading, setLoading] = useState(true);
-  const [words, setWords] = useState([]);
+  const [selectedwords, setSelectedwords] = useState([]);
   const [revealed, setRevealed] = useState({});
 
   useEffect(() => {
-    if (open) {
+    if (open && !dataLoading) {
       setLoading(true);
       setRevealed({});
       setTimeout(() => {
-        const selectedWords = getRandomWords(rows);
-        setWords(selectedWords);
+        const selected = getRandomItems(words);
+        setSelectedwords(selected);
         setLoading(false);
       }, 1000);
     }
-  }, [open, rows]);
+  }, [open, dataLoading, words]);
 
   const toggleReveal = (id) => {
     setRevealed((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -51,26 +53,26 @@ const RandomWordsModal = ({ open, onClose, rows }) => {
   return (
     <Modal open={open} onClose={onClose}>
       <Box sx={style}>
-        {loading ? (
+        {loading || dataLoading ? (
           <Box display="flex" justifyContent="center">
             <CircularProgress />
           </Box>
         ) : (
           <>
             <Typography variant="h5" mb={2}>
-              Words of the day
+              Words of the Day
             </Typography>
-            {words.map((w) => (
-              <Box key={w.id} mb={2} borderBottom="1px solid #eee" pb={1}>
+            {selectedwords.map((item) => (
+              <Box key={item.id} mb={2} borderBottom="1px solid #eee" pb={1}>
                 <Box display="flex" justifyContent="space-between" alignItems="center">
-                  <Typography fontWeight="bold">{w.word}</Typography>
-                  <IconButton onClick={() => toggleReveal(w.id)}>
+                  <Typography fontWeight="bold">{item.phrase}</Typography>
+                  <IconButton onClick={() => toggleReveal(item.id)}>
                     <VisibilityIcon />
                   </IconButton>
                 </Box>
-                <Collapse in={revealed[w.id]}>
-                  <Typography variant="body2" mt={1}><strong>Meaning:</strong> {w.meaning}</Typography>
-                  <Typography variant="body2" color="text.secondary"><strong>Prayer:</strong> {w.prayer}</Typography>
+                <Collapse in={revealed[item.id]}>
+                  <Typography variant="body2" mt={1}><strong>Usage:</strong> {item.usage}</Typography>
+                  <Typography variant="body2" color="text.secondary"><strong>Description:</strong> {item.description}</Typography>
                 </Collapse>
               </Box>
             ))}

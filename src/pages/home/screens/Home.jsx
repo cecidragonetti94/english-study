@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, Stack, Button } from '@mui/material';
 import GridHome from '../components/GridHome';
 import RandomWordsModal from '../components/RandomButtonModal';
@@ -15,19 +15,17 @@ const Home = () => {
   ];
   return (
     <Box p={3}>
-      <Typography variant="h4" fontWeight="bold" mb={3}>
-        Meaning Table
-      </Typography>
+
       <Button variant="contained" sx={{ mb: 2 }} onClick={() => setOpenModal(true)}>
-        Random Words
+        Practice
       </Button>
 
 
       <Stack spacing={4}>
         <GridHome />
       </Stack>
-      <RandomWordsModal open={openModal} onClose={()=> setOpenModal(false)} rows={mockRows} />
-      </Box>
+      <RandomWordsModal open={openModal} onClose={() => setOpenModal(false)} rows={mockRows} />
+    </Box>
   );
 };
 

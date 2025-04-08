@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Box, IconButton, Tooltip, SvgIcon, Stack, Typography, Button } from '@mui/material';
+import { Box, IconButton, Tooltip, SvgIcon, Stack, Typography, Button,useMediaQuery } from '@mui/material';
 import { DataGrid, GridToolbar, GridToolbarContainer, } from '@mui/x-data-grid';
 import img404 from '../../assets/errors/error-404.png';
 import html2canvas from 'html2canvas';
@@ -73,34 +73,25 @@ const NoResultsOverlay = () => {
   );
 }
 
-const GenericDataGrid = ({ rows, columns, loading, actions, onClickAddButton, value, onChange, buttonAdd = true }) => {
+const GenericDataGrid = ({ rows, columns, loading, actions, onClickAddButton, value, onChange, buttonAdd = true, onRowClick }) => {
   const gridRef = useRef();
-  const columnsWithFlex = columns.map((col) => ({
-    ...col,
-    flex: 1,
-    minWidth: 50,
-  }));
-  if (actions && actions?.length > 0) {
-    columnsWithFlex.push({
-      field: 'actions',
-      headerName: 'Acciones',
-      sortable: false,
-      width: 150,
-      renderCell: ({ row }) => (
-        <Box>
-          {actions.map((action, index) => (
-              <IconButton aria-label={action.label} onClick={() => action.onClick(row)} disabled={action.disabled}>
-                <Tooltip title={action.label}>
-                  <SvgIcon fontSize="small">
-                    <action.icon />
-                  </SvgIcon>
-                </Tooltip>
-              </IconButton>
-          ))}
-        </Box>
-      ),
-    });
-  }
+  const isMobile = useMediaQuery('(max-width:600px)');
+  const filteredColumns = columns
+  .filter(col => !(isMobile && col.hideOnMobile))
+  .map(col => {
+    const updatedCol = { ...col };
+
+    if (updatedCol.width && isMobile) {
+      updatedCol.width = Math.min(updatedCol.width, 170);
+    }
+
+    if (!updatedCol.width) {
+      updatedCol.flex = 1;
+      updatedCol.minWidth = 50;
+    }
+
+    return updatedCol;
+  });
 
   const handleExportToPDF = () => {
     const input = gridRef.current;
@@ -126,7 +117,7 @@ const GenericDataGrid = ({ rows, columns, loading, actions, onClickAddButton, va
   };
 
   return (
-    <Box sx={{ width: '100%', overflowX: 'auto' }}>
+    <Box sx={{ width: '100%'}}>
       <Box ref={gridRef} sx={{ minWidth: '800px', height: '600px' }}>
         <DataGrid
           sx={{
@@ -140,8 +131,9 @@ const GenericDataGrid = ({ rows, columns, loading, actions, onClickAddButton, va
             },
           }}
           rows={rows}
-          columns={columnsWithFlex}
+          columns={filteredColumns}
           loading={loading}
+          onRowClick={onRowClick}
           slots={{
             toolbar: CustomToolbar,
             noRowsOverlay: NoRowsOverlay,
@@ -154,6 +146,7 @@ const GenericDataGrid = ({ rows, columns, loading, actions, onClickAddButton, va
               onChange,
               value,
               buttonAdd,
+
             },
           }}
           disableRowSelectionOnClick
@@ -162,6 +155,7 @@ const GenericDataGrid = ({ rows, columns, loading, actions, onClickAddButton, va
       </Box>
     </Box>
   );
+
   
 };
 
