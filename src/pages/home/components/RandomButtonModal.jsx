@@ -51,38 +51,50 @@ const RandomWordsModal = ({ open, onClose }) => {
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <Box sx={style}>
-        {loading || dataLoading ? (
-          <Box display="flex" justifyContent="center">
-            <CircularProgress />
-          </Box>
-        ) : (
-          <>
-            <Typography variant="h5" mb={2}>
-              Words of the Day
-            </Typography>
-            {selectedwords.map((item) => (
-              <Box key={item.id} mb={2} borderBottom="1px solid #eee" pb={1}>
-                <Box display="flex" justifyContent="space-between" alignItems="center">
-                  <Typography fontWeight="bold">{item.phrase}</Typography>
-                  <IconButton onClick={() => toggleReveal(item.id)}>
-                    <VisibilityIcon />
-                  </IconButton>
-                </Box>
-                <Collapse in={revealed[item.id]}>
-                  <Typography variant="body2" mt={1}><strong>Usage:</strong> {item.usage}</Typography>
-                  <Typography variant="body2" color="text.secondary"><strong>Description:</strong> {item.description}</Typography>
-                </Collapse>
-              </Box>
-            ))}
-            <Box textAlign="right" mt={2}>
-              <Button variant="contained" onClick={onClose}>Cerrar</Button>
-            </Box>
-          </>
-        )}
+<Modal open={open} onClose={onClose}>
+  <Box sx={{ ...style, display: 'flex', flexDirection: 'column', maxHeight: '90vh' }}>
+    {loading || dataLoading ? (
+      <Box display="flex" justifyContent="center" flex={1}>
+        <CircularProgress />
       </Box>
-    </Modal>
+    ) : (
+      <>
+        <Typography variant="h5" mb={2}>
+          Words of the Day
+        </Typography>
+
+        <Box
+          sx={{
+            overflowY: 'auto',
+            flex: 1,
+            pr: 1, 
+            mb: 2,
+          }}
+        >
+          {selectedwords.map((item) => (
+            <Box key={item.id} mb={2} borderBottom="1px solid #eee" pb={1}>
+              <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Typography fontWeight="bold">{item.phrase}</Typography>
+                <IconButton onClick={() => toggleReveal(item.id)}>
+                  <VisibilityIcon />
+                </IconButton>
+              </Box>
+              <Collapse in={revealed[item.id]}>
+                <Typography variant="body2" mt={1}><strong>Usage:</strong> {item.usage}</Typography>
+                <Typography variant="body2" color="text.secondary"><strong>Description:</strong> {item.description}</Typography>
+              </Collapse>
+            </Box>
+          ))}
+        </Box>
+
+        {/* Botón siempre visible */}
+        <Box textAlign="right">
+          <Button variant="contained" onClick={onClose}>Cerrar</Button>
+        </Box>
+      </>
+    )}
+  </Box>
+</Modal>
   );
 };
 
