@@ -43,20 +43,20 @@ const GridHome = () => {
     const synth = window.speechSynthesis;
     const utterance = new SpeechSynthesisUtterance(text);
     const voices = synth.getVoices();
-  
+
     const englishVoice = voices.find(voice =>
-      voice.lang.startsWith('en-GB') && voice.name.toLowerCase() 
+      voice.lang.startsWith('en-GB') && voice.name.toLowerCase()
     );
-  
+
     if (englishVoice) {
       utterance.voice = englishVoice;
     } else {
-      utterance.lang = 'en-GB'; 
+      utterance.lang = 'en-GB';
     }
-  
+
     synth.speak(utterance);
   };
-  
+
   const columns = [
     { field: 'phrase', headerName: 'Phrase', flex: 1 },
     { field: 'usage', headerName: 'Usage', flex: 2, hideOnMobile: true },
@@ -71,7 +71,7 @@ const GridHome = () => {
       width: 80,
       renderCell: (params) => (
         <IconButton onClick={(e) => {
-          e.stopPropagation(); 
+          e.stopPropagation();
           speak(params.row.phrase);
         }}>
           <VolumeUpIcon />
@@ -79,7 +79,7 @@ const GridHome = () => {
       ),
     },
   ];
-  
+
   return (
     <>
       <GenericDataGrid
@@ -108,9 +108,19 @@ const GridHome = () => {
         >
           {selectedWord && (
             <>
-              <Typography variant="h4" gutterBottom>
-                {selectedWord.phrase}
-              </Typography>
+              <Box display="flex" alignItems="center" gap={1} justifyContent='center'>
+                <Typography variant="h4" gutterBottom>
+                  {selectedWord.phrase}
+                </Typography>
+                <IconButton
+                  aria-label="Escuchar"
+                  onClick={() => speak(selectedWord.phrase)}
+                  size="small"
+                >
+                  <VolumeUpIcon fontSize="medium" />
+                </IconButton>
+              </Box>
+
               <Typography variant="body2" gutterBottom>
                 <strong>Usage: </strong> {selectedWord.usage}
               </Typography>
