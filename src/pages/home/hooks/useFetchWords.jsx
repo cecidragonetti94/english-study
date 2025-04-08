@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Papa from 'papaparse';
 
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1Z74I_qA2gpbW6Ol65yxRXhtvMrakeRDMnkFKo7Wg_ng/gviz/tq?tqx=out:csv&sheet=Sheet1';
 
@@ -10,19 +11,20 @@ const useFetchWords = () => {
     const fetchWords = async () => {
       try {
         const response = await fetch(SHEET_URL);
-        const text = await response.text();
-        const lines = text.trim().split('\n');
-        const data = lines.slice(1).map((line, index) => {
-          const values = line.split(',').map(value => 
-            value.trim().replace(/^"|"$/g, '') 
-          );
-          return {
-            id: index + 1,
-            phrase: values[0],
-            usage: values[1],
-            description: values[2],
-          };
+        const csvText = await response.text();
+
+        const parsed = Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true,
         });
+
+        const data = parsed.data.map((row, index) => ({
+          id: index + 1,
+          phrase: row['phrase'] || '',
+          usage: row['usage'] || '',
+          description: row['description'] || '',
+        }));
+
         setWords(data);
       } catch (err) {
         console.error('Error loading CSV:', err);
