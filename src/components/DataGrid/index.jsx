@@ -118,8 +118,15 @@ const GenericDataGrid = ({ rows, columns, loading, actions, onClickAddButton, va
 
   return (
     <Box sx={{ width: '100%'}}>
-      <Box ref={gridRef} sx={{ minWidth: '800px', height: '600px' }}>
-        <DataGrid
+<Box
+  ref={gridRef}
+  sx={{
+    width: '100%',
+    height: '600px',
+    minWidth: { xs: '100%', sm: '800px' }, // 100% en mobile, 800px en pantallas más grandes
+    overflowX: 'auto', // por si se llega a desbordar
+  }}
+>        <DataGrid
           sx={{
             backgroundColor: 'white',
             '& .MuiDataGrid-columnHeaders': {
