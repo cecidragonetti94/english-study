@@ -40,9 +40,21 @@ const GridHome = () => {
 
 
   const speak = (text) => {
+    const synth = window.speechSynthesis;
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US'; // o 'en-GB' si preferís británico
-    window.speechSynthesis.speak(utterance);
+    const voices = synth.getVoices();
+  
+    const englishVoice = voices.find(voice =>
+      voice.lang.startsWith('en-GB') && voice.name.toLowerCase() 
+    );
+  
+    if (englishVoice) {
+      utterance.voice = englishVoice;
+    } else {
+      utterance.lang = 'en-GB'; 
+    }
+  
+    synth.speak(utterance);
   };
   
   const columns = [
