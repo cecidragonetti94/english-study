@@ -122,10 +122,10 @@ const GridHome = () => {
               </Box>
 
               <Typography variant="body2" gutterBottom>
-                <strong>Usage: </strong> {selectedWord.usage}
+                <strong>Usage:</strong>&nbsp; {selectedWord.usage}
               </Typography>
-              <Typography variant="body2" gutterBottom>
-                <strong>Description: </strong> {selectedWord.description}
+              <Typography variant="body2" gutterBottom color="text.secondary">
+                <strong>Description: </strong>&nbsp; {selectedWord.description}
               </Typography>
               <Box mt={2} textAlign="right">
                 <Button variant="contained" onClick={handleClose}>
