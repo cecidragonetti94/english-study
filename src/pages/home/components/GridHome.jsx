@@ -7,6 +7,9 @@ import {
   Typography,
   Button,
 } from '@mui/material';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import IconButton from '@mui/material/IconButton';
+
 
 const GridHome = () => {
   const [search, setSearch] = useState('');
@@ -35,12 +38,36 @@ const GridHome = () => {
     );
   }, [search, words]);
 
-  const columns = [
-    { field: 'phrase', headerName: 'Phrase' },
-    { field: 'usage', headerName: 'Usage', hideOnMobile: true },
-    { field: 'description', headerName: 'Description', hideOnMobile: true },
-  ];
 
+  const speak = (text) => {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US'; // o 'en-GB' si preferís británico
+    window.speechSynthesis.speak(utterance);
+  };
+  
+  const columns = [
+    { field: 'phrase', headerName: 'Phrase', flex: 1 },
+    { field: 'usage', headerName: 'Usage', flex: 2, hideOnMobile: true },
+    { field: 'description', headerName: 'Description', flex: 2, hideOnMobile: true },
+    {
+      field: 'speak',
+      headerName: '',
+      sortable: false,
+      filterable: false,
+      align: 'center',
+      headerAlign: 'center',
+      width: 80,
+      renderCell: (params) => (
+        <IconButton onClick={(e) => {
+          e.stopPropagation(); 
+          speak(params.row.phrase);
+        }}>
+          <VolumeUpIcon />
+        </IconButton>
+      ),
+    },
+  ];
+  
   return (
     <>
       <GenericDataGrid
