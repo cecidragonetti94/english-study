@@ -39,7 +39,8 @@ const RandomWordsModal = ({ open, onClose }) => {
   const [revealed, setRevealed] = useState({});
   const { categories } = useFetchCategories();
   const [selectedCategories, setSelectedCategories] = useState([]);
-console.log('selectedCategories', categories);
+  const [tempCategories, setTempCategories] = useState([]);
+
   useEffect(() => {
     if (open && !dataLoading) {
       setLoading(true);
@@ -77,6 +78,12 @@ console.log('selectedCategories', categories);
     synth.speak(utterance);
   };
 
+  const handleClose = () => {
+    setSelectedCategories([]);
+    setTempCategories([]);
+    onClose();
+  }
+
   return (
     <Modal open={open} onClose={onClose}>
       <Box sx={{ ...style, display: 'flex', flexDirection: 'column', maxHeight: '90vh' }}>
@@ -92,12 +99,14 @@ console.log('selectedCategories', categories);
             <Autocomplete
               multiple
               options={categories}
-              value={selectedCategories}
-              onChange={(e, newValue) => setSelectedCategories(newValue)}
+              value={tempCategories}
+              onChange={(e, newValue) => setTempCategories(newValue)}
+              onBlur={() => setSelectedCategories(tempCategories)}
               renderInput={(params) => <TextField {...params} label="Filter by Category" />}
               size="small"
               sx={{ mb: 2 }}
             />
+
             <Box
               sx={{
                 overflowY: 'auto',
@@ -129,7 +138,7 @@ console.log('selectedCategories', categories);
               ))}
             </Box>
             <Box textAlign="right">
-              <Button variant="contained" onClick={onClose}>Cerrar</Button>
+              <Button variant="contained" onClick={() => handleClose()}>Cerrar</Button>
             </Box>
           </>
         )}
