@@ -23,8 +23,9 @@ const useFetchWords = () => {
           phrase: row['phrase'] || '',
           usage: row['usage'] || '',
           description: row['description'] || '',
-        }));
+          category: row['category'] || '',
 
+        }));
         setWords(data);
       } catch (err) {
         console.error('Error loading CSV:', err);

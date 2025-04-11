@@ -61,6 +61,7 @@ const GridHome = () => {
     { field: 'phrase', headerName: 'Phrase', flex: 1 },
     { field: 'usage', headerName: 'Usage', flex: 2, hideOnMobile: true },
     { field: 'description', headerName: 'Description', flex: 2, hideOnMobile: true },
+    { field: 'category', headerName: 'Category', flex: 1, sorteable:true },
     {
       field: 'speak',
       headerName: '',

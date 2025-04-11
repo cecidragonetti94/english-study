@@ -7,10 +7,13 @@ import {
   Button,
   IconButton,
   Collapse,
+  Autocomplete,
+  TextField
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import useFetchwords from '../hooks/useFetchWords';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import useFetchCategories from '../hooks/useFetchCategories';
 
 const style = {
   position: 'absolute',
@@ -34,18 +37,24 @@ const RandomWordsModal = ({ open, onClose }) => {
   const [loading, setLoading] = useState(true);
   const [selectedwords, setSelectedwords] = useState([]);
   const [revealed, setRevealed] = useState({});
-
+  const { categories } = useFetchCategories();
+  const [selectedCategories, setSelectedCategories] = useState([]);
+console.log('selectedCategories', categories);
   useEffect(() => {
     if (open && !dataLoading) {
       setLoading(true);
       setRevealed({});
       setTimeout(() => {
-        const selected = getRandomItems(words);
+        const filteredWords = selectedCategories.length > 0
+          ? words.filter(w => selectedCategories.includes(w.category))
+          : words;
+
+        const selected = getRandomItems(filteredWords);
         setSelectedwords(selected);
         setLoading(false);
       }, 1000);
     }
-  }, [open, dataLoading, words]);
+  }, [open, dataLoading, words, selectedCategories]);
 
   const toggleReveal = (id) => {
     setRevealed((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -80,7 +89,15 @@ const RandomWordsModal = ({ open, onClose }) => {
             <Typography variant="h5" mb={2}>
               Words of the Day
             </Typography>
-
+            <Autocomplete
+              multiple
+              options={categories}
+              value={selectedCategories}
+              onChange={(e, newValue) => setSelectedCategories(newValue)}
+              renderInput={(params) => <TextField {...params} label="Filter by Category" />}
+              size="small"
+              sx={{ mb: 2 }}
+            />
             <Box
               sx={{
                 overflowY: 'auto',
@@ -95,10 +112,10 @@ const RandomWordsModal = ({ open, onClose }) => {
                     <Typography fontWeight="bold">{item.phrase}</Typography>
                     <span style={{ fontSize: '0.8em', color: '#888', display: 'flex', gap: '0.5em' }}>
                       <IconButton onClick={() => toggleReveal(item.id)} size="small">
-                        <VisibilityIcon fontSize="small"/>
+                        <VisibilityIcon fontSize="small" />
                       </IconButton>
                       <IconButton onClick={() => speak(item.phrase)} size="small">
-                        <VolumeUpIcon ontSize="small"/>
+                        <VolumeUpIcon ontSize="small" />
                       </IconButton>
                     </span>
 
@@ -111,8 +128,6 @@ const RandomWordsModal = ({ open, onClose }) => {
                 </Box>
               ))}
             </Box>
-
-            {/* Botón siempre visible */}
             <Box textAlign="right">
               <Button variant="contained" onClick={onClose}>Cerrar</Button>
             </Box>
