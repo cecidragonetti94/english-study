@@ -14,6 +14,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import useFetchwords from '../hooks/useFetchWords';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import useFetchCategories from '../hooks/useFetchCategories';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 const style = {
   position: 'absolute',
@@ -57,6 +58,7 @@ const RandomWordsModal = ({ open, onClose }) => {
     }
   }, [open, dataLoading, words, selectedCategories]);
 
+
   const toggleReveal = (id) => {
     setRevealed((prev) => ({ ...prev, [id]: !prev[id] }));
   };
@@ -77,6 +79,20 @@ const RandomWordsModal = ({ open, onClose }) => {
 
     synth.speak(utterance);
   };
+  const refreshWords = () => {
+    setLoading(true);
+    setRevealed({});
+    setTimeout(() => {
+      const filteredWords = selectedCategories.length > 0
+        ? words.filter(w => selectedCategories.includes(w.category))
+        : words;
+
+      const selected = getRandomItems(filteredWords);
+      setSelectedwords(selected);
+      setLoading(false);
+    }, 500);
+  };
+
 
   const handleClose = () => {
     setSelectedCategories([]);
@@ -96,16 +112,66 @@ const RandomWordsModal = ({ open, onClose }) => {
             <Typography variant="h5" mb={2}>
               Words of the Day
             </Typography>
-            <Autocomplete
-              multiple
-              options={categories}
-              value={tempCategories}
-              onChange={(e, newValue) => setTempCategories(newValue)}
-              onBlur={() => setSelectedCategories(tempCategories)}
-              renderInput={(params) => <TextField {...params} label="Filter by Category" />}
-              size="small"
-              sx={{ mb: 2 }}
-            />
+            <Box display="flex" alignItems="center" gap={1} mb={2}>
+              <Autocomplete
+                multiple
+                fullWidth
+                disableCloseOnSelect
+                options={categories}
+                value={tempCategories}
+                onChange={(e, newValue) => setTempCategories(newValue)}
+                onClose={() => setSelectedCategories(tempCategories)}
+                renderTags={(value, getTagProps) => {
+                  if (value.length === 0) return null;
+
+                  const visibleTags = value.slice(0, 2);
+                  const hiddenCount = value.length - visibleTags.length;
+
+                  return [
+                    ...visibleTags.map((option, index) => (
+                      <span key={option} style={{ marginRight: 6 }}>
+                        {option}
+                      </span>
+                    )),
+                    hiddenCount > 0 && (
+                      <span
+                        key="count-chip"
+                        style={{
+                          background: '#e0e0e0',
+                          borderRadius: '12px',
+                          padding: '2px 8px',
+                          fontSize: '0.75rem',
+                        }}
+                      >
+                        +{hiddenCount} más
+                      </span>
+                    )
+                  ];
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Filtrar por categoría"
+                    size="small"
+                  />
+                )}
+                sx={{
+                  flexGrow: 1,
+                  '.MuiAutocomplete-inputRoot': {
+                    minHeight: 40,
+                    maxHeight: 40,
+                    overflow: 'hidden',
+                  },
+                }}
+              />
+
+
+
+              <IconButton onClick={refreshWords} color="primary" size="small">
+                <RefreshIcon />
+              </IconButton>
+            </Box>
+
 
             <Box
               sx={{
