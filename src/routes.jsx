@@ -3,7 +3,7 @@ import Home from './pages/home/screens/Home'
 import NotFound from './pages/Errors/screens/NotFound';
 import MainLayout from './MainLayout';
 import Login from './pages/Login/screens/Login';
-
+import Verbs from './pages/verbs/screens/Verbs';
 const PublicRoutes = [
 
   { path: '401', element: <NotFound status='401' /> },
@@ -14,6 +14,7 @@ const PublicRoutes = [
     element: <MainLayout />, 
     children: [
       { path: 'home', element: <Home /> },
+      { path: 'verbs', element: <Verbs /> }, 
       { path: '404', element: <NotFound status='404' /> },
       { path: '500', element: <NotFound status='500' /> },
       { path: '*', element: <NotFound status='404' /> },

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Box, Typography, Stack, Button } from '@mui/material';
-import GridHome from '../components/GridHome';
+import { Box, Stack, Button } from '@mui/material';
+import GridVerbs from '../components/GridVers';
 import RandomWordsModal from '../components/RandomButtonModal';
 
-const Home = () => {
+const Verbs = () => {
   const [openModal, setOpenModal] = useState(false);
 
   return (
@@ -15,11 +15,11 @@ const Home = () => {
 
 
       <Stack spacing={4}>
-        <GridHome />
+        <GridVerbs />
       </Stack>
       <RandomWordsModal open={openModal} onClose={() => setOpenModal(false)}  />
     </Box>
   );
 };
 
-export default Home;
+export default Verbs;

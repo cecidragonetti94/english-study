@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { AppBar, Toolbar, IconButton, Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
-import { Menu, ExitToApp, Person, VolunteerActivism } from '@mui/icons-material';
+import { Menu, ExitToApp, VolunteerActivism } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import * as colors from '../../../theme/colors';  
-import logo from '../../../assets/logo.png'; // Asegúrate de que la ruta sea correcta
+import logo from '../../../assets/logo.png'; 
+import TranslateIcon from '@mui/icons-material/Translate';
 
 const menuItems = [
-  { id:1, text: "Words", icon: <VolunteerActivism sx={{ color: colors.secondary }} /> },
-  { id:2, text: "Log out", icon: <ExitToApp sx={{ color: colors.secondary }} /> }
+  { id: 1, text: "Words", icon: <VolunteerActivism sx={{ color: colors.secondary }} />, route: '/home' },
+  { id: 2, text: "Verbs", icon: <TranslateIcon sx={{ color: colors.secondary }} />, route: '/verbs' },
+  { id: 3, text: "Log out", icon: <ExitToApp sx={{ color: colors.secondary }} />, action: '/' }
 ];
 
 const Navbar = () => {
@@ -18,10 +20,7 @@ const Navbar = () => {
     setOpen(state);
   };
 
-  const handleLogout = () => {
-    navigate('/');
-  };
-
+ 
   return (
     <>
       <AppBar position="static" color="secondary">
@@ -29,13 +28,16 @@ const Navbar = () => {
           <IconButton onClick={toggleDrawer(true)} color="inherit">
             <Menu />
           </IconButton>
-          <IconButton onClick={handleLogout} color="inherit">
+          <IconButton onClick={() => navigate('/')} color="inherit">
             <ExitToApp />
           </IconButton>
         </Toolbar>
       </AppBar>
 
-      <Drawer anchor="left" open={open} onClose={toggleDrawer(false)}
+      <Drawer
+        anchor="left"
+        open={open}
+        onClose={toggleDrawer(false)}
         PaperProps={{ sx: { backgroundColor: colors.primary.light, color: colors.text, width: 250 } }}
       >
         <List>
@@ -45,9 +47,9 @@ const Navbar = () => {
             alt="MerendApp Logo"
             sx={{ height: 180, display: "block", margin: "0 auto", marginBottom: 5 }}
           />
-          {menuItems.map((item, index) => (
-            <ListItem key={index} disablePadding>
-              <ListItemButton onClick={item.id === 2 ? handleLogout : null}>
+          {menuItems.map((item) => (
+            <ListItem key={item.id} disablePadding>
+              <ListItemButton onClick={() => navigate(item.route || '#')}>
                 <ListItemIcon>{item.icon}</ListItemIcon>
                 <ListItemText 
                   primary={item.text} 
